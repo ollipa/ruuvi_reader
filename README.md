@@ -1,6 +1,6 @@
 # RuuviTag sensory data reader
 
-A library to collect sensory data from RuuviTag sensors using Bluetooth LE. In practice just a convience wrapper over `btleplug` and `ruuvi_sensor_protocol` crates.
+A library to collect sensory data from RuuviTag sensors using Bluetooth LE. In practice just a convenience wrapper over `btleplug` and `ruuvi_sensor_protocol` crates.
 
 ## Usage
 
