@@ -1,0 +1,18 @@
+[package]
+name = "ruuvi_reader"
+description = "A library to collect sensory data from RuuviTag sensors."
+version = "0.1.0"
+authors = ["Olli Paakkunainen <olli@paakkunainen.fi>"]
+repository = "https://github.com/ollipa/ruuvi_reader"
+keywords = ["ruuvi", "ruuvitag", "bluetooth"]
+edition = "2018"
+license = "MIT"
+exclude = [".github/*"]
+
+[lib]
+name = "ruuvi_reader"
+path = "src/lib.rs"
+
+[dependencies]
+btleplug = "0.5.4"
+ruuvi-sensor-protocol = "0.4.1"
