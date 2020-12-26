@@ -60,6 +60,7 @@ impl SensorData {
         self.mac_address
             .iter()
             .map(|x| format!("{:X?}", x))
+            .rev()
             .collect::<Vec<String>>()
             .join(":")
     }
