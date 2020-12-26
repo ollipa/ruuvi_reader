@@ -1,11 +1,15 @@
+mod ruuvi;
+
 use std::sync::mpsc::Receiver;
 
-use btleplug::api::{BDAddr, Central, CentralEvent, Peripheral};
+use btleplug::api::{Central, CentralEvent};
 use btleplug::bluez::adapter::ConnectedAdapter;
 use btleplug::bluez::manager::Manager;
-
 pub use btleplug::Error as BleError;
-pub use ruuvi_sensor_protocol::{ParseError, SensorValues};
+pub use ruuvi_sensor_protocol::ParseError;
+
+use crate::ruuvi::parse_sensor_data;
+pub use crate::ruuvi::SensorData;
 
 /// Represents a physical bluetooth interface.
 pub struct BleAdapter {
@@ -47,9 +51,9 @@ pub struct ScanResults {
 }
 
 impl Iterator for ScanResults {
-    type Item = Result<SensorValues, ParseError>;
+    type Item = Result<SensorData, ParseError>;
 
-    fn next(&mut self) -> Option<Result<SensorValues, ParseError>> {
+    fn next(&mut self) -> Option<Result<SensorData, ParseError>> {
         loop {
             let event = self.receiver.iter().next();
             if let Some(event) = event {
@@ -67,29 +71,4 @@ impl Iterator for ScanResults {
             return None;
         }
     }
-}
-
-fn parse_sensor_data(
-    adapter: &ConnectedAdapter,
-    address: BDAddr,
-) -> Option<Result<SensorValues, ParseError>> {
-    let data = adapter
-        .peripheral(address)
-        .map(|peripheral| peripheral.properties().manufacturer_data)
-        .flatten();
-
-    if let Some(data) = data {
-        if data.len() > 2 {
-            let id = ((data[1] as u16) << 8) | data[0] as u16;
-            return match SensorValues::from_manufacturer_specific_data(id, &data[2..]) {
-                Ok(sensor_values) => Some(Ok(sensor_values)),
-                Err(err) => match err {
-                    // Ignore data from unknown devices
-                    ParseError::UnknownManufacturerId(_) => None,
-                    err => Some(Err(err)),
-                },
-            };
-        }
-    }
-    None
 }
