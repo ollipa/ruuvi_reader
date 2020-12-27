@@ -59,7 +59,7 @@ impl SensorData {
     pub fn mac_address_as_string(&self) -> String {
         self.mac_address
             .iter()
-            .map(|x| format!("{:X?}", x))
+            .map(|x| format!("{:02X}", x))
             .rev()
             .collect::<Vec<String>>()
             .join(":")
@@ -116,4 +116,18 @@ pub(crate) fn parse_sensor_data(
         }
     }
     None
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn mac_address_as_string() {
+        let mut data = SensorData::new([0, 0, 0, 0, 0, 0], 0, 0, 0, 0, (0, 0, 0));
+        assert_eq!(data.mac_address_as_string(), "00:00:00:00:00:00");
+        data.mac_address = [0, 0, 0, 0, 0, 255];
+        assert_eq!(data.mac_address_as_string(), "FF:00:00:00:00:00");
+        data.mac_address = [1, 2, 3, 4, 5, 6];
+        assert_eq!(data.mac_address_as_string(), "06:05:04:03:02:01");
+    }
 }
